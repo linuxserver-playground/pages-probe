@@ -52,8 +52,8 @@ def trial(label, version, artifact_id, want):
 
 ids = json.loads(env["IDS"])
 parent = env["PARENT"]
-trial("A head sha (as deploy-pages)", sha, int(ids["a"]), f"a-{run}")
-trial("B custom string", f"{sha}-{run}-b", int(ids["b"]), f"b-{run}")
-trial("C random 40 hex", "0123456789abcdef0123456789abcdef01234567", int(ids["c"]), f"c-{run}")
-trial("D parent commit sha", parent, int(ids["d"]), f"d-{run}")
-trial("E head sha again (reuse)", sha, int(ids["e"]), f"e-{run}")
+trial("A head sha", sha, int(ids["a"]), f"a-{run}")
+trial("B head sha again, A live", sha, int(ids["b"]), f"b-{run}")
+trial("C head sha a third time", sha, int(ids["c"]), f"c-{run}")
+trial("D parent sha", parent, int(ids["d"]), f"d-{run}")
+trial("E head sha after parent", sha, int(ids["e"]), f"e-{run}")
