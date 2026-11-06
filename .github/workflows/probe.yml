@@ -13,7 +13,11 @@ jobs:
         with:
           fetch-depth: 2
       - name: Build the five sites
-        run: for v in a b c d e; do mkdir -p "site-$v"; echo "$v-${GITHUB_RUN_ID}" > "site-$v/stamp.txt"; done
+        run: |
+          mkdir -p big
+          python3 -c "import os,random;[open(f'big/f{i//1000}/{i}.json','w').write(os.urandom(600).hex()) if os.makedirs(f'big/f{i//1000}',exist_ok=True) is None else 0 for i in range(39000)]"
+          for v in a b c d e; do mkdir -p "site-$v"; cp -r big/. "site-$v/"; echo "$v-${GITHUB_RUN_ID}" > "site-$v/stamp.txt"; done
+          du -sh site-a; find site-a -type f | wc -l
       - {id: a, uses: actions/upload-pages-artifact@v5, with: {path: site-a, name: p-a}}
       - {id: b, uses: actions/upload-pages-artifact@v5, with: {path: site-b, name: p-b}}
       - {id: c, uses: actions/upload-pages-artifact@v5, with: {path: site-c, name: p-c}}
