@@ -1,0 +1,26 @@
+name: Probe
+on: workflow_dispatch
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    environment: github-pages
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 2
+      - name: Build the five sites
+        run: for v in a b c d e; do mkdir -p "site-$v"; echo "$v-${GITHUB_RUN_ID}" > "site-$v/stamp.txt"; done
+      - {id: a, uses: actions/upload-pages-artifact@v5, with: {path: site-a, name: p-a}}
+      - {id: b, uses: actions/upload-pages-artifact@v5, with: {path: site-b, name: p-b}}
+      - {id: c, uses: actions/upload-pages-artifact@v5, with: {path: site-c, name: p-c}}
+      - {id: d, uses: actions/upload-pages-artifact@v5, with: {path: site-d, name: p-d}}
+      - {id: e, uses: actions/upload-pages-artifact@v5, with: {path: site-e, name: p-e}}
+      - name: Probe
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          IDS: '{"a":"${{ steps.a.outputs.artifact_id }}","b":"${{ steps.b.outputs.artifact_id }}","c":"${{ steps.c.outputs.artifact_id }}","d":"${{ steps.d.outputs.artifact_id }}","e":"${{ steps.e.outputs.artifact_id }}"}'
+        run: PARENT=$(git rev-parse HEAD~1) python3 -u probe.py
